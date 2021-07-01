@@ -119,6 +119,18 @@ namespace Public.Dac.Sample.Tests
             }
         }
 
+        private void AssertNoObjectNamed(TSqlModel model, string objectName)
+        {
+            // looks for any named object matching objectName
+            foreach (TSqlObject tsqlObject in GetTablesViewsAndSchemas(model))
+            {
+                if (tsqlObject.Name.HasName && tsqlObject.Name.Parts.Count > 1)
+                {
+                    Assert.AreNotEqual(objectName, tsqlObject.Name.Parts[1], "Expected no object to be named {0}", objectName);
+                }
+            }
+        }
+
         private TSqlModel CreateFilteredModel(SchemaBasedFilter schemaFilter, TSqlModel model)
         {
             ModelFilterer modelFilterer = new ModelFilterer(schemaFilter);
@@ -252,10 +264,9 @@ namespace Public.Dac.Sample.Tests
                 // having to pass string-based arguments. This could be worked around by serializing arguments to a 
                 // file and passing the file path to the contributor if you need to do anything advanced.
                 options.AdditionalDeploymentContributorArguments =
-                    PlanFilterer.BuildPlanFiltererArgumentString("SchemaBasedFilter", new Dictionary<string, string>()
+                    PlanFilterer.BuildPlanFiltererArgumentString("ObjectBasedFilter", new Dictionary<string, string>()
                     {
-                        {"Schema1", "dev"},
-                        {"Schema2", "test"},
+                        {"ObjectName", "v3"}
                     });
 
                 // For test purposes, always create a new database (otherwise previous failures might mess up our result)
@@ -272,8 +283,9 @@ namespace Public.Dac.Sample.Tests
             services.Extract(extractedPackagePath, productionDbName, "AppName", new Version(1, 0));
             var extractedModel = _trash.Add(new TSqlModel(extractedPackagePath, DacSchemaModelStorageType.Memory));
 
-            Assert.AreEqual(TopLevelProdElementCount, CountTablesViewsAndSchemas(extractedModel));
-            AssertAllObjectsHaveSchemaName(extractedModel, "prod");
+            //Assert.AreEqual(TopLevelProdElementCount, CountTablesViewsAndSchemas(extractedModel));
+            //AssertAllObjectsHaveSchemaName(extractedModel, "prod");
+            AssertNoObjectNamed(extractedModel, "v3");
 
         }
 

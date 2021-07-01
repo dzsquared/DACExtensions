@@ -47,7 +47,8 @@ namespace Public.Dac.Samples
 
         private static Dictionary<string, Lazy<IFilter>> _filterMap = new Dictionary<string, Lazy<IFilter>>()
         {
-            {"SchemaBasedFilter", new Lazy<IFilter>(() => new SchemaBasedFilter())}
+            {"SchemaBasedFilter", new Lazy<IFilter>(() => new SchemaBasedFilter())},
+            {"ObjectBasedFilter", new Lazy<IFilter>(() => new ObjectBasedFilter())}
         }; 
 
         private IFilter _filter;
